@@ -28,44 +28,53 @@
     <span id="toast-msg">已记录支出</span>
   </div>
 
-  <!-- Top Sticky Navigation Bar -->
+  <!-- Top Navigation Header -->
   <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-      <div class="flex items-center space-x-3">
-        <span class="p-2 bg-amber-500/10 text-amber-600 rounded-xl text-lg font-bold">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <span class="p-1.5 bg-amber-500/10 text-amber-600 rounded-lg text-base font-bold">
           <i class="fa-solid fa-plane-departure"></i>
         </span>
         <div>
           <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">吉隆坡一日游时间表</h1>
-          <p class="text-[11px] text-slate-500">KLIA T2 过境特快 · 03:05 - 22:10</p>
+          <p class="text-[10px] text-slate-500">KLIA T2 过境特快 · 03:05 - 22:10</p>
         </div>
       </div>
 
-      <!-- Live Flight Countdown Widget -->
-      <div class="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-1.5 text-amber-950">
-        <i class="fa-solid fa-clock text-amber-600 animate-pulse text-xs"></i>
-        <div class="text-right">
-          <div class="text-[10px] text-amber-800 font-semibold leading-none">22:10 起飞倒计时</div>
-          <div class="text-xs sm:text-sm font-extrabold font-mono text-slate-900 tracking-tight" id="flight-countdown">
-            计算中...
-          </div>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <button onclick="document.getElementById('money-section').scrollIntoView({behavior: 'smooth'})" class="sm:hidden px-2.5 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-semibold shadow-sm">
-          记账
-        </button>
-      </div>
+      <button onclick="document.getElementById('money-section').scrollIntoView({behavior: 'smooth'})" class="sm:hidden px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-semibold shadow-sm">
+        记账
+      </button>
     </div>
   </header>
 
+  <!-- Big Visible Countdown Banner (Always Visible) -->
+  <div class="bg-amber-500 text-slate-950 border-b border-amber-600/20 py-2.5 px-4 shadow-sm">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+        <span class="text-xs sm:text-sm font-bold tracking-wide">
+          <i class="fa-solid fa-plane mr-1"></i> 澳洲航班起飞倒计时 (KLIA T2 · 22:10)
+        </span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="flight-countdown-box" class="bg-slate-900 text-amber-300 font-mono font-black text-sm sm:text-base px-3 py-1 rounded-lg tracking-widest shadow-inner">
+          <span id="countdown-hours">00</span>时 
+          <span id="countdown-minutes">00</span>分 
+          <span id="countdown-seconds">00</span>秒
+        </div>
+        <span id="countdown-status" class="text-[11px] font-semibold text-slate-900">
+          值机柜台 21:10 严格关闭
+        </span>
+      </div>
+    </div>
+  </div>
+
   <!-- Hero Overview -->
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-5">
     <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-lg mb-8 relative overflow-hidden">
       <div class="relative z-10 max-w-3xl">
         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/10 text-amber-300 text-xs font-medium mb-3 backdrop-blur">
-          <i class="fa-solid fa-route"></i> 经典免门票 + 城市老街淘货路线 · 汇率以 CNY (¥) 为主
+          <i class="fa-solid fa-route"></i> 经典免门票 + 城市老街淘货路线 · 汇率主显 CNY (¥)
         </div>
         <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-2">清晨避暑黑风洞 · 茨厂街求签 · 2nd Street 古着 · 双子塔花园</h2>
         <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
@@ -116,7 +125,6 @@
                 03:05 降落 T2，办理入境、提取行李、在 ATM 取少量马币令吉备用或购买 Touch 'n Go 交通卡/eSIM。于航站楼内咖啡小馆小憩提神。
               </p>
 
-              <!-- Transport Card -->
               <div class="bg-slate-50 rounded-lg p-3 text-xs text-slate-600 border border-slate-100 flex items-start gap-2 mb-3">
                 <i class="fa-solid fa-bus text-amber-600 mt-0.5"></i>
                 <div class="flex-1">
@@ -128,7 +136,6 @@
                 </div>
               </div>
 
-              <!-- Action Preset -->
               <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
                 <button onclick="addPreset('T2 机场大巴', 15, '交通')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
                   + 记大巴 RM 15 (≈¥24.6)
@@ -162,7 +169,6 @@
                 抵达 KL Sentral 先存箱（寄存柜约 RM 10~15）。在车站或附近老茶室（如旧街场）享用咖椰烤吐司、半熟蛋与拉茶（约 RM 8~12）。随后乘车去黑风洞。
               </p>
 
-              <!-- Spot Feature -->
               <div class="bg-amber-50/70 rounded-xl p-3 border border-amber-200/70 mb-3">
                 <div class="flex items-center justify-between mb-1">
                   <span class="font-bold text-sm text-amber-950 flex items-center gap-1.5">
@@ -178,7 +184,6 @@
                 </div>
               </div>
 
-              <!-- Presets -->
               <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
                 <button onclick="addPreset('KL Sentral 行李寄存', 15, '寄存')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
                   + 记寄存 RM 15 (≈¥24.6)
@@ -210,7 +215,6 @@
                 乘 KTM 回到 Pasar Seni 站。步行游览茨厂街关帝庙与斯里玛哈马廉曼印度庙，顺路进入仙四师爷宫求签祈福排解心绪，下山漫步鬼仔巷壁画区与 REXKL 迷宫书店。
               </p>
 
-              <!-- Spot Badges with Maps Links -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
                 <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50 flex flex-col justify-between">
                   <div>
@@ -243,7 +247,6 @@
                 <strong>午餐推荐：</strong> 金莲记炭火福建炒面、丽丰牛肉面、义钦豆腐花或罗汉果龙眼冰糖炖冬瓜（人均约 RM 15~25，≈ ¥25~41）。
               </div>
 
-              <!-- Presets -->
               <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
                 <button onclick="addPreset('仙四师爷宫求签香烛', 10, '求签/门票')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
                   + 记求签 RM 10 (≈¥16.4)
@@ -381,7 +384,7 @@
             </button>
           </div>
 
-          <!-- Adjustable Exchange Rate Box (Hidden by default) -->
+          <!-- Adjustable Exchange Rate Box -->
           <div id="rate-settings" class="hidden bg-slate-50 p-3 rounded-xl border border-slate-200 mb-3 text-xs space-y-2">
             <div class="flex items-center justify-between">
               <span class="text-slate-600 font-medium">1 MYR 兑换 CNY (¥):</span>
@@ -436,7 +439,6 @@
               </div>
             </div>
 
-            <!-- Live conversion preview in form -->
             <div id="form-cny-preview" class="text-[11px] text-amber-700 bg-amber-50 px-2.5 py-1 rounded hidden font-medium">
               折合人民币：¥ 0.00
             </div>
@@ -472,7 +474,6 @@
     let rateCny = 1.64;
     let rateAud = 0.35;
 
-    // Load persisted rates if available
     try {
       const savedRateCny = localStorage.getItem('kl_rate_cny');
       const savedRateAud = localStorage.getItem('kl_rate_aud');
@@ -480,7 +481,6 @@
       if (savedRateAud) rateAud = parseFloat(savedRateAud);
     } catch(e) {}
 
-    // Load persisted expenses
     let expenses = [];
     try {
       expenses = JSON.parse(localStorage.getItem('kl_transit_expenses') || '[]');
@@ -488,37 +488,50 @@
       expenses = [];
     }
 
-    // Stage checklist states
     let stageStates = [false, false, false, false, false, false, false];
 
-    // Flight Live Countdown (Target: Today 22:10:00)
+    // High-visibility Flight Live Countdown
     function updateCountdown() {
-      const countdownEl = document.getElementById('flight-countdown');
-      if (!countdownEl) return;
+      const hoursEl = document.getElementById('countdown-hours');
+      const minEl = document.getElementById('countdown-minutes');
+      const secEl = document.getElementById('countdown-seconds');
+      const statusEl = document.getElementById('countdown-status');
+      const boxEl = document.getElementById('flight-countdown-box');
+
+      if (!hoursEl || !minEl || !secEl) return;
 
       const now = new Date();
-      const target = new Date();
+      let target = new Date();
       target.setHours(22, 10, 0, 0);
 
-      const diffMs = target - now;
-
-      if (diffMs <= 0) {
-        countdownEl.innerHTML = '<span class="text-red-600 font-bold">已起飞 / 闸口关闭</span>';
-        return;
+      // If already past 22:10 today, roll target over to next day's 22:10 so the timer never disappears or breaks
+      if (now > target) {
+        target.setDate(target.getDate() + 1);
       }
 
-      const totalSeconds = Math.floor(diffMs / 1000);
+      const diffMs = target - now;
+      const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
+
       const hours = Math.floor(totalSeconds / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
       const seconds = totalSeconds % 60;
 
       const pad = (n) => String(n).padStart(2, '0');
 
-      if (totalSeconds < 5400) { // under 1.5h
-        countdownEl.className = 'text-xs sm:text-sm font-extrabold font-mono text-red-600 tracking-tight animate-pulse';
-      }
+      hoursEl.innerText = pad(hours);
+      minEl.innerText = pad(minutes);
+      secEl.innerText = pad(seconds);
 
-      countdownEl.innerText = `${pad(hours)}时 ${pad(minutes)}分 ${pad(seconds)}秒`;
+      // Urgency state (less than 2 hours to takeoff)
+      if (totalSeconds < 7200) {
+        boxEl.className = 'bg-red-600 text-white font-mono font-black text-sm sm:text-base px-3 py-1 rounded-lg tracking-widest shadow-inner animate-pulse';
+        statusEl.innerText = '紧急：请务必处于前往 T2 快铁或已抵达机场！';
+        statusEl.className = 'text-[11px] font-bold text-red-700 animate-pulse';
+      } else {
+        boxEl.className = 'bg-slate-900 text-amber-300 font-mono font-black text-sm sm:text-base px-3 py-1 rounded-lg tracking-widest shadow-inner';
+        statusEl.innerText = '值机柜台 21:10 严格关闭';
+        statusEl.className = 'text-[11px] font-semibold text-slate-900';
+      }
     }
 
     function toggleStage(num) {
@@ -612,7 +625,6 @@
         }).join('');
       }
 
-      // Compute Totals
       const totalMyr = expenses.reduce((acc, curr) => acc + curr.amount, 0);
       const totalCny = totalMyr * rateCny;
       const totalAud = totalMyr * rateAud;
@@ -685,7 +697,7 @@
       return div.innerHTML;
     }
 
-    // Initialize
+    // Initialize inputs and timers
     document.getElementById('rate-cny-input').value = rateCny;
     document.getElementById('rate-aud-input').value = rateAud;
     document.getElementById('hint-cny').innerText = rateCny.toFixed(2);
