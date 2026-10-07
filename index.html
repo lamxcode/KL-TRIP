@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>吉隆坡特快过境一日游指南 | KL 1-Day Transit & Expense</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .timeline-line::before {
+      content: '';
+      position: absolute;
+      top: 1.5rem;
+      bottom: 0;
+      left: 1.15rem;
+      width: 2px;
+      background: #e2e8f0;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-16">
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="p-2 bg-amber-500/10 text-amber-600 rounded-xl text-lg font-bold">
+          <i class="fa-solid fa-plane-departure"></i>
+        </span>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">吉隆坡一日游时间表</h1>
+          <p class="text-xs text-slate-500">KLIA T2 过境特快 · 03:05 - 22:10</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <i class="fa-solid fa-clock-rotate-left mr-1.5"></i>19h 5m 充裕中转
+        </span>
+        <button onclick="document.getElementById('money-section').scrollIntoView({behavior: 'smooth'})" class="sm:hidden px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-semibold shadow-sm">
+          记账
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Overview & Quick Status -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-lg mb-8 relative overflow-hidden">
+      <div class="relative z-10 max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/10 text-amber-300 text-xs font-medium mb-3 backdrop-blur">
+          <i class="fa-solid fa-route"></i> 经典免门票 + 城市老街淘货路线
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-2">清晨避暑黑风洞 · 茨厂街求签 · 2nd Street 古着 · 双子塔花园</h2>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          针对凌晨抵达优化：早间利用清晨凉爽与空档游览黑风洞；中午唐人街品尝老字号与仙四师爷宫求签；午后悠闲淘选日式古着，傍晚漫步 KLCC 公园后直奔 T2 顺畅登机。
+        </p>
+      </div>
+      <!-- Background pattern -->
+      <div class="absolute right-[-2rem] top-[-2rem] w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    </div>
+
+    <!-- Layout: 2 Columns (Primary: Itinerary & Spots, Secondary: Money Logging) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Primary Column: 7 Stages Detailed Itinerary (8 Cols) -->
+      <div class="lg:col-span-8 space-y-6">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+          <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i class="fa-solid fa-map-location-dot text-amber-500"></i> 行程规划与核心打卡点
+          </h3>
+          <span class="text-xs text-slate-500">已标注预估费用与交通提示</span>
+        </div>
+
+        <div class="relative timeline-line space-y-6">
+
+          <!-- Stage 1 -->
+          <div class="relative flex items-start space-x-4">
+            <div class="w-9 h-9 rounded-full bg-slate-100 border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10">
+              01
+            </div>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">03:05 - 05:30</span>
+                <span class="text-xs text-slate-400">机场中转区</span>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">入境、提款/办卡与机场歇脚</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                03:05 航班降落 T2，办理入境、取行李、在 ATM 取少量现金或购买 Touch 'n Go 交通卡/eSIM。于航站楼内点心咖啡馆小憩提神。
+              </p>
+              <div class="bg-slate-50 rounded-lg p-3 text-xs text-slate-600 border border-slate-100 flex items-start gap-2">
+                <i class="fa-solid fa-bus text-slate-400 mt-0.5"></i>
+                <div>
+                  <strong>接驳建议：</strong> 首班车约 05:00 - 05:30 发车。可选机场大巴（约 RM 12~15，1小时）或 KLIA Transit/Ekspres（RM 55，约 35 分钟直达 KL Sentral）。
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 2 -->
+          <div class="relative flex items-start space-x-4">
+            <div class="w-9 h-9 rounded-full bg-amber-50 border-2 border-amber-500 text-amber-600 flex items-center justify-center font-bold text-xs shrink-0 z-10">
+              02
+            </div>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-700">06:30 - 09:30</span>
+                <span class="text-xs text-emerald-600 font-medium"><i class="fa-solid fa-bolt"></i> 清晨拍照黄金期</span>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">寄存大件行李、南洋早餐与黑风洞（Batu Caves）</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                抵达 KL Sentral 先存箱（寄存柜约 RM 10~15）。在车站或附近老茶室吃咖椰吐司、养生半熟蛋加拉茶（约 RM 8~12）。随后前往黑风洞。
+              </p>
+              
+              <!-- Highlight Card -->
+              <div class="bg-amber-50/60 rounded-xl p-3 border border-amber-200/70 mb-3">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-sm text-amber-950 flex items-center gap-1.5">
+                    <i class="fa-solid fa-mountain text-amber-600"></i> Batu Caves (黑风洞)
+                  </span>
+                  <span class="text-xs font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded">免费入场</span>
+                </div>
+                <p class="text-xs text-slate-700 leading-relaxed">
+                  清晨气温凉爽宜人且游客稀少，爬 272 级彩虹阶梯省力且极好出片。注意台阶周围调皮的猴子，妥善收好随身食品与水瓶。
+                </p>
+              </div>
+
+              <div class="text-xs text-slate-500 flex items-center gap-2">
+                <i class="fa-solid fa-train-subway"></i> <strong>交通：</strong> KL Sentral 搭乘 KTM 通勤火车直达（单程 RM 2.6，约 30 分钟）或打 Grab（约 RM 20）。
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 3 -->
+          <div class="relative flex items-start space-x-4">
+            <div class="w-9 h-9 rounded-full bg-slate-100 border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10">
+              03
+            </div>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">10:00 - 13:00</span>
+                <span class="text-xs text-slate-400">历史街区 · 美食</span>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">唐人街历史古迹、仙四师爷宫求签与传统午餐</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                乘坐 KTM 返回 Pasar Seni 站。步行浏览关帝庙与斯里玛哈马廉曼印度庙，顺路步入百年古庙仙四师爷宫求签问事、排解心绪，下山再漫步鬼仔巷壁画区与 REXKL 迷宫书店。
+              </p>
+
+              <!-- Points in Chinatown -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50">
+                  <span class="text-xs font-bold text-slate-900 block mb-0.5">
+                    <i class="fa-solid fa-hands-praying text-red-600 mr-1"></i>仙四师爷宫 (Sin Sze Si Ya)
+                  </span>
+                  <p class="text-xs text-slate-600">吉隆坡现存历史最悠久的华人庙宇，可求签解签、掷圣杯，体验宁静氛围。</p>
+                </div>
+                <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50">
+                  <span class="text-xs font-bold text-slate-900 block mb-0.5">
+                    <i class="fa-solid fa-camera-retro text-indigo-600 mr-1"></i>鬼仔巷 & REXKL 老戏院
+                  </span>
+                  <p class="text-xs text-slate-600">特色南洋复古壁画巷弄与废弃老戏院改造的立体迷宫书店，全程免门票。</p>
+                </div>
+              </div>
+
+              <div class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <strong>午餐推荐：</strong> 金莲记炭火福建炒面、丽丰牛肉面、义钦豆腐花或罗汉果龙眼冰糖炖冬瓜（人均约 RM 15~25）。
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 4 -->
+          <div class="relative flex items-start space-x-4">
+            <div class="w-9 h-9 rounded-full bg-slate-100 border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10">
+              04
+            </div>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">13:30 - 15:30</span>
+                <span class="text-xs text-slate-400">文艺街区淘货</span>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">Bangsar 文艺街区 & 2nd Street 古着淘店</h4>
+              <p class="text-sm text-slate-600 mb-2">
+                打 Grab（约 RM 8~12）来到郁郁葱葱的 Bangsar Baru。避开午间炽热阳光，在冷气充足的 <strong>2nd Street Bangsar Baru Bundle Shop</strong> 挑选优质日系/欧美复古服饰。
+              </p>
+              <div class="text-xs text-slate-500">
+                街区周边分布许多安静的精品手冲咖啡馆与独立买手店，适合悠闲漫步。
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 5 -->
+          <div class="relative flex items-start space-x-4">
+            <div class="w-9 h-9 rounded-full bg-slate-100 border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10">
+              05
+            </div>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">16:00 - 17:30</span>
+                <span class="text-xs text-slate-400">地标景致</span>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">城中城公园（KLCC Park）与双子塔近景合影</h4>
+              <p class="text-sm text-slate-600 mb-2">
+                搭乘 LRT 或 Grab 前往 KLCC。跳过人潮拥挤的商场，直接进入双峰塔背后的 <strong>KLCC Park 公园</strong>。在人工湖畔找寻仰拍双塔的黄金机位，坐看现代化天际线。
+              </p>
+              <div class="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded inline-block">
+                完全免费的户外开阔景观，绿荫环绕。
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 6 -->
+          <div class="relative flex items-start space-x-4">
+            <div class="w-9 h-9 rounded-full bg-slate-100 border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10">
+              06
+            </div>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">18:00 - 19:30</span>
+                <span class="text-xs text-slate-400">小印度 & 撤退准备</span>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">小印度十五碑风情、晚饭与取回行李</h4>
+              <p class="text-sm text-slate-600 mb-2">
+                返回 KL Sentral 旁的小印度街区（Brickfields），在浓厚的香料气息中享用极具代表性的平价香蕉叶饭（Banana Leaf Rice）。随后返回车站寄存柜取回随身行李。
+              </p>
+            </div>
+          </div>
+
+          <!-- Stage 7 -->
+          <div class="relative flex items-start space-x-4">
+            <div class="w-9 h-9 rounded-full bg-emerald-500 border-2 border-white text-white flex items-center justify-center font-bold text-xs shrink-0 z-10 shadow">
+              <i class="fa-solid fa-plane-departure text-xs"></i>
+            </div>
+            <div class="flex-1 bg-slate-900 text-white p-4 sm:p-5 rounded-xl shadow-md">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">19:30 - 22:10</span>
+                <span class="text-xs text-slate-400">返程防堵车</span>
+              </div>
+              <h4 class="font-bold text-base text-white mb-1">搭乘机场快线，准时通关登机</h4>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-3">
+                19:30 乘坐 KLIA Ekspres / Transit 直达 T2（30-35 分钟，RM 55），彻底避开晚高峰堵车。20:10 准时抵达 T2，从容办理登机手续与安检，登上 22:10 飞往澳洲的夜间航班。
+              </p>
+              <div class="text-xs text-slate-400">
+                （若选择巴士 RM 12~15，请务必提前至 19:00 前发车以防堵车）
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Secondary Column: Money Logger (4 Cols) -->
+      <div id="money-section" class="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
+        
+        <!-- Summary Card -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i class="fa-solid fa-wallet text-amber-500"></i> 开销随手记
+            </h3>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider">Dual Currency</span>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 mb-4">
+            <div class="text-xs text-slate-500 mb-1">今日累计支出</div>
+            <div class="text-2xl font-extrabold text-slate-900 tracking-tight" id="sum-myr">RM 0.00</div>
+            <div class="flex items-center gap-3 mt-1.5 pt-2 border-t border-slate-200/60 text-xs">
+              <div class="text-slate-600">
+                AUD: <span class="font-bold text-slate-800" id="sum-aud">$0.00</span>
+              </div>
+              <div class="text-slate-400">|</div>
+              <div class="text-slate-600">
+                HKD: <span class="font-bold text-slate-800" id="sum-hkd">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Entry Form -->
+          <form id="expense-form" class="space-y-3" onsubmit="event.preventDefault(); handleAddExpense();
