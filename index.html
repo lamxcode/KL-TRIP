@@ -3,557 +3,363 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>吉隆坡一日游时间表 | KL 1-Day Transit & CNY Expense Tracker</title>
-  <!-- Tailwind CSS CDN -->
+  <title>吉隆坡一日特快游 | KL 1-Day Transit & Expense</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome 6 Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- Google Fonts: Plus Jakarta Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#fffbeb',
-              100: '#fef3c7',
-              500: '#f59e0b',
-              600: '#d97706',
-              700: '#b45309',
-            }
-          }
-        }
-      }
-    };
-  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .timeline-stem::before {
+    .timeline-line::before {
       content: '';
       position: absolute;
-      top: 2rem;
-      bottom: 2rem;
-      left: 1.25rem;
+      top: 1.5rem;
+      bottom: 0;
+      left: 1.15rem;
       width: 2px;
       background: #e2e8f0;
-      z-index: 1;
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased selection:bg-amber-500 selection:text-white min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-16">
 
-  <!-- Toast Notification System -->
-  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-3"></div>
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-5 right-5 z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-emerald-400" id="toast-icon"></i>
+    <span id="toast-msg">已记录支出</span>
+  </div>
 
-  <!-- Header Navigation -->
-  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md shadow-amber-500/20">
-          <i class="fa-solid fa-map-location-dot text-base"></i>
-        </div>
+  <!-- Top Sticky Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <span class="p-2 bg-amber-500/10 text-amber-600 rounded-xl text-lg font-bold">
+          <i class="fa-solid fa-plane-departure"></i>
+        </span>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">吉隆坡特快过境一日游</h1>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">03:05 - 22:10</span>
-          </div>
-          <p class="text-xs text-slate-500 font-medium hidden sm:block">核心景点优先 · 交通防堵方案 · 谷歌地图精准直达 · 人民币主力记账</p>
+          <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">吉隆坡一日游时间表</h1>
+          <p class="text-[11px] text-slate-500">KLIA T2 过境特快 · 03:05 - 22:10</p>
         </div>
       </div>
 
-      <!-- Quick Action Buttons -->
+      <!-- Live Flight Countdown Widget -->
+      <div class="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-1.5 text-amber-950">
+        <i class="fa-solid fa-clock text-amber-600 animate-pulse text-xs"></i>
+        <div class="text-right">
+          <div class="text-[10px] text-amber-800 font-semibold leading-none">22:10 起飞倒计时</div>
+          <div class="text-xs sm:text-sm font-extrabold font-mono text-slate-900 tracking-tight" id="flight-countdown">
+            计算中...
+          </div>
+        </div>
+      </div>
+
       <div class="flex items-center gap-2">
-        <a href="#money-logger-section" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm shadow-amber-500/20 transition flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-wallet"></i>
-          <span>记一笔 (CNY ¥)</span>
-        </a>
+        <button onclick="document.getElementById('money-section').scrollIntoView({behavior: 'smooth'})" class="sm:hidden px-2.5 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-semibold shadow-sm">
+          记账
+        </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-16 flex-1 w-full space-y-6">
-
-    <!-- Hero Banner with CNY Focused Totals -->
-    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 sm:p-7 shadow-xl">
-      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-        <div class="max-w-2xl space-y-2">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30 flex items-center gap-1.5">
-              <i class="fa-solid fa-route"></i> 19小时过境动线 (免门票+古着淘货)
-            </span>
-            <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-white/10 text-slate-200">
-              <i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>全景点含 Google Maps 导航
-            </span>
-            <span id="itinerary-completion-badge" class="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              已打卡 0 / 7 站
-            </span>
-          </div>
-          <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
-            黑风洞彩虹梯 · 仙四师爷宫求签 · Bangsar 古着 · KLCC 公园拍双塔
-          </h2>
-          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            专为 03:05 降落 KLIA T2 航班定制：避暑直奔黑风洞；唐人街拜古庙摇签解惑；午后冷气房淘选优质日本古着；傍晚公园仰拍双子塔，晚间搭乘 19:30 快铁直达 T2，从容乘坐 22:10 赴澳航班。
-          </p>
+  <!-- Hero Overview -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-5 sm:p-6 text-white shadow-lg mb-8 relative overflow-hidden">
+      <div class="relative z-10 max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/10 text-amber-300 text-xs font-medium mb-3 backdrop-blur">
+          <i class="fa-solid fa-route"></i> 经典免门票 + 城市老街淘货路线 · 汇率以 CNY (¥) 为主
         </div>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-2">清晨避暑黑风洞 · 茨厂街求签 · 2nd Street 古着 · 双子塔花园</h2>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+          针对凌晨抵达优化：清晨凉爽直奔黑风洞；中午唐人街品尝老字号与百年仙四师爷宫求签解结；午后避暑淘选高质量日式古着，傍晚漫步 KLCC 公园后搭乘快铁准时返场。
+        </p>
 
-        <!-- Live Totals Display Widget (Focus on CNY) -->
-        <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 shrink-0 min-w-[240px] space-y-2">
-          <div class="text-[11px] font-semibold text-slate-300 uppercase tracking-wider flex items-center justify-between">
-            <span>今日累计支出 (CNY 人民币)</span>
-            <span class="text-amber-400 font-bold" id="hero-badge-count">0 笔</span>
-          </div>
-          <div class="text-3xl font-extrabold text-amber-300 tracking-tight" id="hero-sum-cny">¥ 0.00</div>
-          <div class="text-xs text-slate-300 flex items-center justify-between pt-1 border-t border-white/10">
-            <span>马币: <b id="hero-sum-myr" class="text-white">RM 0.00</b></span>
-            <span>澳元: <b id="hero-sum-aud" class="text-white">A$ 0.00</b></span>
-          </div>
+        <!-- Dynamic Overall Expense Summary Banner -->
+        <div class="inline-flex flex-wrap items-center gap-3 bg-white/10 backdrop-blur rounded-xl px-3.5 py-2 text-xs border border-white/10">
+          <span class="text-slate-300">当前总支出：</span>
+          <span class="text-amber-400 font-extrabold text-base" id="hero-sum-cny">¥ 0.00</span>
+          <span class="text-slate-400">|</span>
+          <span class="text-slate-200" id="hero-sum-myr">RM 0.00</span>
+          <span class="text-slate-400">|</span>
+          <span class="text-slate-300" id="hero-sum-aud">A$ 0.00</span>
         </div>
       </div>
-      <div class="absolute -right-16 -top-16 w-56 h-56 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute right-[-2rem] top-[-2rem] w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
     </div>
 
-    <!-- Layout: Left Column (Itinerary & Maps) + Right Column (CNY Logger) -->
+    <!-- Layout: 2 Columns -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-      <!-- LEFT COLUMN: Primary Itinerary & Interest Spots (8 Cols) -->
+      
+      <!-- Primary Column: 7 Stages Timeline (8 Cols) -->
       <div class="lg:col-span-8 space-y-6">
-        
         <div class="flex items-center justify-between pb-2 border-b border-slate-200">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-            <h3 class="text-base sm:text-lg font-bold text-slate-900">行程规划与核心景点导航 (全7站)</h3>
-          </div>
-          <span class="text-xs text-slate-500"><i class="fa-solid fa-arrow-up-right-from-square text-[10px] mr-1"></i>点击地名直达谷歌地图</span>
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i class="fa-solid fa-map-location-dot text-amber-500"></i> 行程规划、打卡地图与交通建议
+          </h3>
+          <span class="text-xs text-slate-500" id="progress-indicator">完成进度：0 / 7 站</span>
         </div>
 
-        <div class="relative timeline-stem space-y-6">
+        <div class="relative timeline-line space-y-6">
 
-          <!-- STAGE 1 -->
-          <div class="relative flex items-start gap-4" id="stage-card-0">
-            <button onclick="toggleStageDone(0)" class="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs flex items-center justify-center border-4 border-slate-50 shadow-md shrink-0 z-10 transition cursor-pointer" title="点击打勾标记完成">
-              <span id="stage-dot-0">01</span>
+          <!-- Stage 1 -->
+          <div class="relative flex items-start space-x-4">
+            <button onclick="toggleStage(1)" id="stage-badge-1" class="w-9 h-9 rounded-full bg-white border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10 transition">
+              01
             </button>
-
-            <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:border-slate-300 transition space-y-3.5">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">03:05 - 05:30</span>
-                <a href="https://www.google.com/maps/search/?api=1&query=Kuala+Lumpur+International+Airport+Terminal+2" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-sky-600 hover:text-sky-800 flex items-center gap-1 bg-sky-50 px-2 py-0.5 rounded border border-sky-100 transition">
-                  <i class="fa-solid fa-location-dot"></i> KLIA Terminal 2 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">03:05 - 05:30</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=Kuala+Lumpur+International+Airport+Terminal+2" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium">
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> KLIA T2 地图
                 </a>
               </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">入境、提款/办卡与机场歇脚</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                03:05 降落 T2，办理入境、提取行李、在 ATM 取少量马币令吉备用或购买 Touch 'n Go 交通卡/eSIM。于航站楼内咖啡小馆小憩提神。
+              </p>
 
-              <div>
-                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <span>入境、提款/办卡与机场歇脚</span>
-                </h3>
-                <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                  03:05 航班降落 <a href="https://www.google.com/maps/search/?api=1&query=Kuala+Lumpur+International+Airport+Terminal+2" target="_blank" rel="noopener noreferrer" class="text-sky-700 font-semibold hover:underline">KLIA Terminal 2</a>。办理入境手续并提取行李，在 ATM 提取少量马币令吉现金或购买 Touch 'n Go / eSIM。在 T2 航站楼找咖啡店休息喘口气，补充精气神。
-                </p>
-              </div>
-
-              <!-- Transport Mode Badge & Details -->
-              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2">
-                <div class="flex items-center justify-between text-xs">
-                  <span class="font-bold text-slate-800 flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrows-split-up-and-left text-indigo-600"></i> 市区接驳 (首班约 05:00 - 05:30)
-                  </span>
-                  <a href="https://www.google.com/maps/search/?api=1&query=KL+Sentral+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-[11px] text-slate-500 hover:text-indigo-600 font-medium">
-                    目的地: KL Sentral <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i>
-                  </a>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <div class="p-2.5 rounded-lg bg-white border border-slate-200 flex flex-col justify-between">
-                    <div>
-                      <div class="flex items-center justify-between font-bold text-slate-800 mb-0.5">
-                        <span class="text-purple-700"><i class="fa-solid fa-train"></i> KLIA Ekspres 快铁</span>
-                        <span>RM 55 (≈¥<span class="calc-val-cny" data-myr="55">90.2</span>)</span>
-                      </div>
-                      <p class="text-[11px] text-slate-500">约 35 分钟直达，早晨舒适高效、班次极准。</p>
-                    </div>
-                    <div class="mt-2 flex gap-1.5">
-                      <button onclick="quickAddPreset('KLIA 快铁前往 KL Sentral', 55, '交通', 'Card')" class="flex-1 text-[11px] font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 py-1 rounded text-center transition">
-                        + 直接记入 (≈¥<span class="calc-val-cny" data-myr="55">90.2</span>)
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="p-2.5 rounded-lg bg-white border border-slate-200 flex flex-col justify-between">
-                    <div>
-                      <div class="flex items-center justify-between font-bold text-slate-800 mb-0.5">
-                        <span class="text-emerald-700"><i class="fa-solid fa-bus"></i> 机场大巴 (Airport Coach)</span>
-                        <span>RM 15 (≈¥<span class="calc-val-cny" data-myr="15">24.6</span>)</span>
-                      </div>
-                      <p class="text-[11px] text-slate-500">约 55 - 70 分钟，清晨无堵车，性价比极高。</p>
-                    </div>
-                    <div class="mt-2 flex gap-1.5">
-                      <button onclick="quickAddPreset('机场大巴前往中央车站', 15, '交通', 'Cash')" class="flex-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 py-1 rounded text-center transition">
-                        + 直接记入 (≈¥<span class="calc-val-cny" data-myr="15">24.6</span>)
-                      </button>
-                    </div>
-                  </div>
+              <!-- Transport Card -->
+              <div class="bg-slate-50 rounded-lg p-3 text-xs text-slate-600 border border-slate-100 flex items-start gap-2 mb-3">
+                <i class="fa-solid fa-bus text-amber-600 mt-0.5"></i>
+                <div class="flex-1">
+                  <strong>首班接驳交通（约 05:00 - 05:30 发车）：</strong>
+                  <ul class="list-disc list-inside mt-1 space-y-0.5 text-slate-500">
+                    <li><strong>机场大巴：</strong>约 RM 12~15（≈ ¥20~25），车程约 1 小时直达 KL Sentral。</li>
+                    <li><strong>KLIA Transit / Ekspres 快铁：</strong>RM 55（≈ ¥90.2），车程 35 分钟。</li>
+                  </ul>
                 </div>
               </div>
 
-              <!-- Quick Log Preset -->
-              <div class="flex items-center justify-between pt-1">
-                <span class="text-[11px] text-slate-400">预估：咖啡小吃 RM 15~25</span>
-                <button onclick="quickAddPreset('T2 清晨咖啡小吃', 20, '餐饮', 'Cash')" class="text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition flex items-center gap-1">
-                  <i class="fa-solid fa-plus text-[10px]"></i> 记早餐/小吃 RM20 (≈¥<span class="calc-val-cny" data-myr="20">32.8</span>)
+              <!-- Action Preset -->
+              <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+                <button onclick="addPreset('T2 机场大巴', 15, '交通')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记大巴 RM 15 (≈¥24.6)
+                </button>
+                <button onclick="addPreset('T2 机场快铁', 55, '交通')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记快铁 RM 55 (≈¥90.2)
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- STAGE 2 -->
-          <div class="relative flex items-start gap-4" id="stage-card-1">
-            <button onclick="toggleStageDone(1)" class="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs flex items-center justify-center border-4 border-slate-50 shadow-md shrink-0 z-10 transition cursor-pointer" title="点击打勾标记完成">
-              <span id="stage-dot-1">02</span>
+          <!-- Stage 2 -->
+          <div class="relative flex items-start space-x-4">
+            <button onclick="toggleStage(2)" id="stage-badge-2" class="w-9 h-9 rounded-full bg-white border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10 transition">
+              02
             </button>
-
-            <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:border-slate-300 transition space-y-3.5">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">06:30 - 09:30</span>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-700">06:30 - 09:30</span>
                 <div class="flex items-center gap-2">
-                  <a href="https://www.google.com/maps/search/?api=1&query=KL+Sentral+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-slate-700 hover:text-amber-600 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded transition">
-                    <i class="fa-solid fa-train"></i> KL Sentral <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                  <a href="https://www.google.com/maps/search/?api=1&query=KL+Sentral+Kuala+Lumpur" target="_blank" class="text-xs text-blue-600 hover:text-blue-800">
+                    <i class="fa-solid fa-location-dot"></i> KL Sentral
                   </a>
-                  <a href="https://www.google.com/maps/search/?api=1&query=Batu+Caves+Selangor" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 transition">
-                    <i class="fa-solid fa-mountain"></i> Batu Caves <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                  <a href="https://www.google.com/maps/search/?api=1&query=Batu+Caves+Selangor" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                    <i class="fa-solid fa-location-dot"></i> 黑风洞地图
                   </a>
                 </div>
               </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">寄存行李、南洋早餐与黑风洞（Batu Caves）</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                抵达 KL Sentral 先存箱（寄存柜约 RM 10~15）。在车站或附近老茶室（如旧街场）享用咖椰烤吐司、半熟蛋与拉茶（约 RM 8~12）。随后乘车去黑风洞。
+              </p>
 
-              <div>
-                <h3 class="text-base font-bold text-slate-900">清晨存行李、南洋经典早餐与黑风洞 (Batu Caves)</h3>
-                <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                  06:30 抵达 <a href="https://www.google.com/maps/search/?api=1&query=KL+Sentral+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-indigo-600 font-bold hover:underline">KL Sentral</a> 先存行李。在车站内或附近吃咖椰烤吐司、半熟蛋配热拉茶。随后轻装直奔 <a href="https://www.google.com/maps/search/?api=1&query=Batu+Caves+Selangor" target="_blank" rel="noopener noreferrer" class="text-emerald-700 font-bold hover:underline">黑风洞 (Batu Caves)</a>，清晨气候凉爽、人流极少，攀登 272 级彩虹台阶拍照最出片（门票免费）。
+              <!-- Spot Feature -->
+              <div class="bg-amber-50/70 rounded-xl p-3 border border-amber-200/70 mb-3">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-sm text-amber-950 flex items-center gap-1.5">
+                    <i class="fa-solid fa-mountain text-amber-600"></i> Batu Caves (黑风洞)
+                  </span>
+                  <span class="text-[11px] font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded">免费入场</span>
+                </div>
+                <p class="text-xs text-slate-700 leading-relaxed mb-2">
+                  清晨气温凉爽宜人且游客稀少，攀登 272 级彩虹阶梯拍照片最出片。随身收好水瓶与零食，小心调皮的猴子。
                 </p>
+                <div class="text-[11px] text-slate-600">
+                  <strong>交通方式：</strong> KL Sentral 搭乘 KTM 通勤火车直达 Batu Caves 站（单程仅 RM 2.6，约 30 分钟）或打 Grab（约 RM 20）。
+                </div>
               </div>
 
-              <!-- Spot Highlights & Presets -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200/60 flex items-center justify-between">
+              <!-- Presets -->
+              <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+                <button onclick="addPreset('KL Sentral 行李寄存', 15, '寄存')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记寄存 RM 15 (≈¥24.6)
+                </button>
+                <button onclick="addPreset('南洋咖椰吐司早餐', 10, '餐饮')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记早餐 RM 10 (≈¥16.4)
+                </button>
+                <button onclick="addPreset('KTM 往返火车票', 5.2, '交通')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记火车 RM 5.2 (≈¥8.5)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 3 -->
+          <div class="relative flex items-start space-x-4">
+            <button onclick="toggleStage(3)" id="stage-badge-3" class="w-9 h-9 rounded-full bg-white border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10 transition">
+              03
+            </button>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">10:00 - 13:00</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=Pasar+Seni+Station+Kuala+Lumpur" target="_blank" class="text-xs text-blue-600 hover:text-blue-800">
+                  <i class="fa-solid fa-location-dot"></i> Pasar Seni 站
+                </a>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">唐人街历史古迹、仙四师爷宫求签与传统午餐</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                乘 KTM 回到 Pasar Seni 站。步行游览茨厂街关帝庙与斯里玛哈马廉曼印度庙，顺路进入仙四师爷宫求签祈福排解心绪，下山漫步鬼仔巷壁画区与 REXKL 迷宫书店。
+              </p>
+
+              <!-- Spot Badges with Maps Links -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50 flex flex-col justify-between">
                   <div>
-                    <span class="font-bold text-slate-900 block"><i class="fa-solid fa-box-archive text-amber-600 mr-1"></i>KL Sentral 存包</span>
-                    <span class="text-slate-500 text-[11px]">RM 15 (≈¥<span class="calc-val-cny" data-myr="15">24.6</span>)</span>
+                    <span class="text-xs font-bold text-slate-900 block mb-1">
+                      <i class="fa-solid fa-hands-praying text-red-600 mr-1"></i>仙四师爷宫 (Sin Sze Si Ya)
+                    </span>
+                    <p class="text-[11px] text-slate-600">百年吉隆坡古庙，摇签、掷圣杯确认，找师傅解签排解焦虑。</p>
                   </div>
-                  <button onclick="quickAddPreset('KL Sentral 大件行李寄存', 15, '寄存', 'Card')" class="text-xs font-bold text-amber-800 bg-amber-200/60 hover:bg-amber-200 px-2 py-1 rounded">
-                    + 记 RM15
-                  </button>
+                  <a href="https://www.google.com/maps/search/?api=1&query=Sin+Sze+Si+Ya+Temple+Kuala+Lumpur" target="_blank" class="text-[11px] text-blue-600 hover:underline mt-2 inline-flex items-center gap-1 font-medium">
+                    <i class="fa-solid fa-map-pin"></i> 导航到仙四师爷宫
+                  </a>
                 </div>
 
-                <div class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/60 flex items-center justify-between">
+                <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50 flex flex-col justify-between">
                   <div>
-                    <span class="font-bold text-slate-900 block"><i class="fa-solid fa-utensils text-emerald-600 mr-1"></i>咖椰吐司早餐</span>
-                    <span class="text-slate-500 text-[11px]">RM 10 (≈¥<span class="calc-val-cny" data-myr="10">16.4</span>)</span>
+                    <span class="text-xs font-bold text-slate-900 block mb-1">
+                      <i class="fa-solid fa-camera-retro text-indigo-600 mr-1"></i>鬼仔巷 & REXKL 戏院
+                    </span>
+                    <p class="text-[11px] text-slate-600">复古街区壁画与废旧戏院改造的立体迷宫书店（免门票）。</p>
                   </div>
-                  <button onclick="quickAddPreset('OldTown 咖椰吐司+半熟蛋+拉茶', 10, '餐饮', 'Cash')" class="text-xs font-bold text-emerald-800 bg-emerald-200/60 hover:bg-emerald-200 px-2 py-1 rounded">
-                    + 记 RM10
-                  </button>
-                </div>
-              </div>
-
-              <!-- Transport Mode Badge -->
-              <div class="p-3 bg-sky-50/70 rounded-xl border border-sky-100 space-y-2 text-xs">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-sky-900 flex items-center gap-1.5">
-                    <i class="fa-solid fa-train-subway text-sky-600"></i> 往返黑风洞交通方案
-                  </span>
-                  <a href="https://www.google.com/maps/search/?api=1&query=Batu+Caves+Selangor" target="_blank" rel="noopener noreferrer" class="text-sky-700 font-semibold hover:underline">
-                    直达 Batu Caves 站出站口 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                  </a>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <div class="p-2 bg-white rounded-lg border border-sky-200">
-                    <div class="flex justify-between font-bold text-sky-800">
-                      <span>KTM 通勤火车</span>
-                      <span>单程仅 RM 2.6 (≈¥<span class="calc-val-cny" data-myr="2.6">4.3</span>)</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 mt-0.5">车程约 30 分钟，出站即到彩虹阶梯。</p>
-                    <button onclick="quickAddPreset('KTM 往返黑风洞火车票', 5.2, '交通', 'Cash')" class="mt-1.5 w-full text-center py-0.5 rounded bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold text-[11px]">
-                      + 记往返 RM5.2 (≈¥<span class="calc-val-cny" data-myr="5.2">8.5</span>)
-                    </button>
-                  </div>
-                  <div class="p-2 bg-white rounded-lg border border-slate-200">
-                    <div class="flex justify-between font-bold text-slate-800">
-                      <span>Grab 网约车</span>
-                      <span>约 RM 20 (≈¥<span class="calc-val-cny" data-myr="20">32.8</span>)</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 mt-0.5">车程约 20 分钟，随叫随走直达洞前广场。</p>
-                    <button onclick="quickAddPreset('Grab 往返黑风洞单程', 20, '交通', 'Card')" class="mt-1.5 w-full text-center py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px]">
-                      + 记单程 RM20 (≈¥<span class="calc-val-cny" data-myr="20">32.8</span>)
-                    </button>
+                  <div class="flex gap-2 mt-2">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Kwai+Chai+Hong+Kuala+Lumpur" target="_blank" class="text-[11px] text-blue-600 hover:underline">鬼仔巷</a>
+                    <span class="text-slate-300">·</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=REXKL+Jalan+Sultan+Kuala+Lumpur" target="_blank" class="text-[11px] text-blue-600 hover:underline">REXKL</a>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <!-- STAGE 3 -->
-          <div class="relative flex items-start gap-4" id="stage-card-2">
-            <button onclick="toggleStageDone(2)" class="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs flex items-center justify-center border-4 border-slate-50 shadow-md shrink-0 z-10 transition cursor-pointer" title="点击打勾标记完成">
-              <span id="stage-dot-2">03</span>
-            </button>
-
-            <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:border-slate-300 transition space-y-3.5">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">10:00 - 13:00</span>
-                <span class="text-xs text-rose-600 font-semibold flex items-center gap-1">
-                  <i class="fa-solid fa-hands-praying"></i> 仙四师爷宫求签 · 唐人街古迹群
-                </span>
+              <div class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-100 mb-3">
+                <strong>午餐推荐：</strong> 金莲记炭火福建炒面、丽丰牛肉面、义钦豆腐花或罗汉果龙眼冰糖炖冬瓜（人均约 RM 15~25，≈ ¥25~41）。
               </div>
 
-              <div>
-                <h3 class="text-base font-bold text-slate-900">唐人街历史古迹、仙四师爷宫求签与传统老字号午餐</h3>
-                <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                  乘坐 KTM 从黑风洞返回 <a href="https://www.google.com/maps/search/?api=1&query=Pasar+Seni+Station+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-indigo-600 font-bold hover:underline">Pasar Seni 站</a>。在唐人街核心徒步，打卡 <a href="https://www.google.com/maps/search/?api=1&query=Guan+Di+Temple+Chinatown+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-rose-700 font-bold hover:underline">关帝庙</a> 与 <a href="https://www.google.com/maps/search/?api=1&query=Sri+Maha+Mariamman+Temple+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-amber-700 font-bold hover:underline">斯里玛哈马廉曼兴都庙</a>。步入 <a href="https://www.google.com/maps/search/?api=1&query=Sin+Sze+Si+Ya+Temple+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-red-700 font-bold hover:underline">仙四师爷宫 (Sin Sze Si Ya Temple)</a>：跪拜禀报、摇签掷圣杯、师傅解签疏导心结；随后漫步 <a href="https://www.google.com/maps/search/?api=1&query=Kwai+Chai+Hong+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-emerald-700 font-bold hover:underline">鬼仔巷</a> 壁画与 <a href="https://www.google.com/maps/search/?api=1&query=REXKL+Jalan+Sultan+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-purple-700 font-bold hover:underline">REXKL 戏院</a> 迷宫书店（全程免门票）。
-                </p>
-              </div>
-
-              <!-- Google Maps Direct Links Cluster -->
-              <div class="flex flex-wrap gap-1.5 text-xs">
-                <a href="https://www.google.com/maps/search/?api=1&query=Sin+Sze+Si+Ya+Temple+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 flex items-center gap-1">
-                  <i class="fa-solid fa-place-of-worship"></i> 仙四师爷宫 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
-                <a href="https://www.google.com/maps/search/?api=1&query=Guan+Di+Temple+Chinatown+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded bg-slate-100 text-slate-800 hover:bg-slate-200 flex items-center gap-1">
-                  <i class="fa-solid fa-landmark"></i> 茨厂街关帝庙 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
-                <a href="https://www.google.com/maps/search/?api=1&query=Sri+Maha+Mariamman+Temple+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 flex items-center gap-1">
-                  <i class="fa-solid fa-om"></i> 斯里玛哈马廉曼兴都庙 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
-                <a href="https://www.google.com/maps/search/?api=1&query=Kwai+Chai+Hong+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 flex items-center gap-1">
-                  <i class="fa-solid fa-camera"></i> 鬼仔巷 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
-                <a href="https://www.google.com/maps/search/?api=1&query=REXKL+Jalan+Sultan+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100 flex items-center gap-1">
-                  <i class="fa-solid fa-book-open"></i> REXKL 迷宫书店 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
-              </div>
-
-              <!-- Cultural & Food Highlights -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                <div class="p-2.5 bg-red-50/70 border border-red-200/60 rounded-xl space-y-1">
-                  <span class="font-bold text-red-950 flex items-center gap-1">
-                    <i class="fa-solid fa-fire text-red-600"></i> 仙四师爷宫求签随喜
-                  </span>
-                  <p class="text-slate-600 text-[11px]">吉隆坡现存最古老华人寺庙，免费入庙，解签或添香油随喜（建议 RM 5~10）。</p>
-                  <button onclick="quickAddPreset('仙四师爷宫解签与香油钱', 10, '求签/门票', 'Cash')" class="text-[11px] font-bold text-red-700 underline block pt-0.5">
-                    + 记香油钱 RM10 (≈¥<span class="calc-val-cny" data-myr="10">16.4</span>)
-                  </button>
-                </div>
-
-                <div class="p-2.5 bg-amber-50/70 border border-amber-200/60 rounded-xl space-y-1">
-                  <span class="font-bold text-amber-950 flex items-center gap-1">
-                    <i class="fa-solid fa-bowl-rice text-amber-600"></i> 茨厂街老字号午餐
-                  </span>
-                  <p class="text-slate-600 text-[11px]">金莲记炭火福建炒面、丽丰牛肉面、义钦豆腐花/罗汉果冬瓜龙眼冰。</p>
-                  <button onclick="quickAddPreset('茨厂街老字号午餐与凉茶', 25, '餐饮', 'Cash')" class="text-[11px] font-bold text-amber-700 underline block pt-0.5">
-                    + 记午餐 RM25 (≈¥<span class="calc-val-cny" data-myr="25">41.0</span>)
-                  </button>
-                </div>
-              </div>
-
-              <!-- Transport Mode -->
-              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs flex items-center justify-between">
-                <span class="text-slate-600"><i class="fa-solid fa-person-walking text-slate-400 mr-1.5"></i>KTM 返回 <a href="https://www.google.com/maps/search/?api=1&query=Pasar+Seni+Station+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-indigo-600 font-semibold hover:underline">Pasar Seni 站</a> 后唐人街核心全部步行</span>
-                <span class="font-bold text-emerald-600">步行 0 车费</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- STAGE 4 -->
-          <div class="relative flex items-start gap-4" id="stage-card-3">
-            <button onclick="toggleStageDone(3)" class="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs flex items-center justify-center border-4 border-slate-50 shadow-md shrink-0 z-10 transition cursor-pointer" title="点击打勾标记完成">
-              <span id="stage-dot-3">04</span>
-            </button>
-
-            <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:border-slate-300 transition space-y-3.5">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">13:30 - 15:30</span>
-                <a href="https://www.google.com/maps/search/?api=1&query=2nd+STREET+Bangsar+Baru+Bundle+Shop" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 transition">
-                  <i class="fa-solid fa-shirt"></i> 2nd Street Bangsar Baru <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
-              </div>
-
-              <div>
-                <h3 class="text-base font-bold text-slate-900">Bangsar 绿荫街区 & 2nd Street 古着二手淘货</h3>
-                <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                  避开下午烈日，前往绿树成荫的 Bangsar Baru。直奔知名的 <a href="https://www.google.com/maps/search/?api=1&query=2nd+STREET+Bangsar+Baru+Bundle+Shop" target="_blank" rel="noopener noreferrer" class="text-indigo-600 font-bold hover:underline">2nd Street Bangsar Baru Bundle Shop</a>，在冷气中淘选日本及欧美高质量古着二手服饰，街区周遭分布精品咖啡店。
-                </p>
-              </div>
-
-              <!-- Transport Mode -->
-              <div class="p-3 bg-emerald-50/70 rounded-xl border border-emerald-100 text-xs flex items-center justify-between flex-wrap gap-2">
-                <div>
-                  <span class="font-bold text-emerald-900"><i class="fa-solid fa-car text-emerald-600 mr-1"></i>交通：从唐人街打 Grab 网约车</span>
-                  <p class="text-[11px] text-slate-600">车程约 10-15 分钟，车费约 RM 10 (≈¥<span class="calc-val-cny" data-myr="10">16.4</span>)，直达店门口避暑。</p>
-                </div>
-                <button onclick="quickAddPreset('Grab 前往 Bangsar 街区', 10, '交通', 'Card')" class="text-xs font-bold text-emerald-800 bg-emerald-200/70 hover:bg-emerald-200 px-2.5 py-1 rounded-lg">
-                  + 记 Grab RM10 (≈¥<span class="calc-val-cny" data-myr="10">16.4</span>)
+              <!-- Presets -->
+              <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+                <button onclick="addPreset('仙四师爷宫求签香烛', 10, '求签/门票')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记求签 RM 10 (≈¥16.4)
                 </button>
-              </div>
-
-              <div class="flex items-center justify-between pt-1">
-                <span class="text-[11px] text-slate-400">预估：古着二手服饰 RM 35~80</span>
-                <button onclick="quickAddPreset('2nd Street 古着二手服饰', 45, '购物', 'Card')" class="text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg">
-                  + 记古着战利品 RM45 (≈¥<span class="calc-val-cny" data-myr="45">73.8</span>)
+                <button onclick="addPreset('茨厂街老字号午餐', 25, '餐饮')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记午餐 RM 25 (≈¥41.0)
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- STAGE 5 -->
-          <div class="relative flex items-start gap-4" id="stage-card-4">
-            <button onclick="toggleStageDone(4)" class="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs flex items-center justify-center border-4 border-slate-50 shadow-md shrink-0 z-10 transition cursor-pointer" title="点击打勾标记完成">
-              <span id="stage-dot-4">05</span>
+          <!-- Stage 4 -->
+          <div class="relative flex items-start space-x-4">
+            <button onclick="toggleStage(4)" id="stage-badge-4" class="w-9 h-9 rounded-full bg-white border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10 transition">
+              04
             </button>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">13:30 - 15:30</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=2nd+STREET+Bangsar+Baru+Bundle+Shop" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                  <i class="fa-solid fa-location-dot"></i> 2nd Street Bangsar 地图
+                </a>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">Bangsar 文艺街区 & 2nd Street 古着淘店</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                打 Grab（约 10-15 分钟，RM 8~12）来到树荫绿化极佳的 Bangsar 文艺街区。在冷气充足的 <strong>2nd Street Bangsar Baru</strong> 淘选日式/欧美古着二手服饰，避开午后烈日。
+              </p>
 
-            <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:border-slate-300 transition space-y-3.5">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">16:00 - 17:30</span>
-                <div class="flex items-center gap-1.5">
-                  <a href="https://www.google.com/maps/search/?api=1&query=KLCC+Park+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 transition">
-                    <i class="fa-solid fa-tree"></i> KLCC Park <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+              <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+                <button onclick="addPreset('Grab 到 Bangsar', 12, '交通')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记车费 RM 12 (≈¥19.7)
+                </button>
+                <button onclick="addPreset('2nd Street 古着消费', 60, '购物')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记古着 RM 60 (≈¥98.4)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 5 -->
+          <div class="relative flex items-start space-x-4">
+            <button onclick="toggleStage(5)" id="stage-badge-5" class="w-9 h-9 rounded-full bg-white border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10 transition">
+              05
+            </button>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">16:00 - 17:30</span>
+                <div class="flex items-center gap-2">
+                  <a href="https://www.google.com/maps/search/?api=1&query=KLCC+Park+Kuala+Lumpur" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                    <i class="fa-solid fa-location-dot"></i> 城中城公园地图
                   </a>
-                  <a href="https://www.google.com/maps/search/?api=1&query=Petronas+Twin+Towers+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-sky-700 hover:text-sky-900 flex items-center gap-1 bg-sky-50 px-2 py-0.5 rounded border border-sky-100 transition">
-                    <i class="fa-solid fa-building"></i> 双子塔 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                  <a href="https://www.google.com/maps/search/?api=1&query=Petronas+Twin+Towers+Kuala+Lumpur" target="_blank" class="text-xs text-blue-600 hover:text-blue-800">
+                    双子塔
                   </a>
                 </div>
               </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">城中城公园（KLCC Park）与双子塔合影</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                打 Grab 或搭乘 LRT 捷运直达 KLCC 站。跳过拥挤繁复的百货商场，直奔后方的 <strong>KLCC Park 公园</strong> 绿荫和湖畔漫步，找寻最佳仰角与双峰塔合影。
+              </p>
 
-              <div>
-                <h3 class="text-base font-bold text-slate-900">城中城公园 (KLCC Park) 与国油双子塔全景合影</h3>
-                <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                  前往吉隆坡地标双子塔正后方的 <a href="https://www.google.com/maps/search/?api=1&query=KLCC+Park+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-emerald-700 font-bold hover:underline">城中城公园 (KLCC Park)</a>。完全避开拥挤且同质化的大商场，在公园树荫与人工湖畔漫步歇脚，捕捉仰拍 <a href="https://www.google.com/maps/search/?api=1&query=Petronas+Twin+Towers+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-sky-700 font-bold hover:underline">国油双子塔 (Petronas Twin Towers)</a> 的最佳免费机位。
-                </p>
-              </div>
-
-              <!-- Transport Mode -->
-              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2 text-xs">
-                <div class="flex justify-between font-bold text-slate-800">
-                  <span><i class="fa-solid fa-route text-amber-600 mr-1"></i>交通选择：Bangsar ➔ KLCC</span>
-                  <span>约 20 分钟</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <div class="p-2 bg-white rounded-lg border border-slate-200 flex justify-between items-center">
-                    <div>
-                      <span class="font-bold text-rose-700">LRT Kelana Jaya 线</span>
-                      <p class="text-[11px] text-slate-500">直达 KLCC 站，单程 RM 2.5 (≈¥<span class="calc-val-cny" data-myr="2.5">4.1</span>)</p>
-                    </div>
-                    <button onclick="quickAddPreset('LRT 前往 KLCC 捷运票', 2.5, '交通', 'Card')" class="text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-1 rounded">
-                      + 记 RM2.5
-                    </button>
-                  </div>
-                  <div class="p-2 bg-white rounded-lg border border-slate-200 flex justify-between items-center">
-                    <div>
-                      <span class="font-bold text-emerald-700">Grab 网约车</span>
-                      <p class="text-[11px] text-slate-500">直达公园口，约 RM 15 (≈¥<span class="calc-val-cny" data-myr="15">24.6</span>)</p>
-                    </div>
-                    <button onclick="quickAddPreset('Grab 前往 KLCC 公园', 15, '交通', 'Card')" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
-                      + 记 RM15
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- STAGE 6 -->
-          <div class="relative flex items-start gap-4" id="stage-card-5">
-            <button onclick="toggleStageDone(5)" class="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs flex items-center justify-center border-4 border-slate-50 shadow-md shrink-0 z-10 transition cursor-pointer" title="点击打勾标记完成">
-              <span id="stage-dot-5">06</span>
-            </button>
-
-            <div class="flex-1 bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:border-slate-300 transition space-y-3.5">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">18:00 - 19:15</span>
-                <a href="https://www.google.com/maps/search/?api=1&query=Little+India+Brickfields+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-orange-700 hover:text-orange-900 flex items-center gap-1 bg-orange-50 px-2 py-0.5 rounded border border-orange-100 transition">
-                  <i class="fa-solid fa-pepper-hot"></i> 小印度十五碑 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
-                </a>
-              </div>
-
-              <div>
-                <h3 class="text-base font-bold text-slate-900">小印度十五碑风情晚餐，步行至 KL Sentral 准备取包</h3>
-                <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                  搭乘 LRT 从 KLCC 快速返回 <a href="https://www.google.com/maps/search/?api=1&query=KL+Sentral+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-indigo-600 font-bold hover:underline">KL Sentral</a>，步行 5 分钟进入充满香料气息的 <a href="https://www.google.com/maps/search/?api=1&query=Little+India+Brickfields+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-orange-600 font-bold hover:underline">小印度十五碑 (Brickfields)</a>。享用热气腾腾的地道印度香蕉叶饭（Banana Leaf Rice）配炸鸡与拉茶。
-                </p>
-              </div>
-
-              <!-- Transport Mode -->
-              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs flex items-center justify-between">
-                <span class="text-slate-700"><i class="fa-solid fa-train-subway text-rose-600 mr-1.5"></i>LRT KLCC 直达 <strong>KL Sentral</strong> 约 12 分钟 (RM 2.4 / ≈¥<span class="calc-val-cny" data-myr="2.4">3.9</span>)，步行直通小印度</span>
-                <button onclick="quickAddPreset('LRT 返回中央车站', 2.4, '交通', 'Card')" class="text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded">
-                  + 记车费 RM2.4
-                </button>
-              </div>
-
-              <div class="flex items-center justify-between pt-1">
-                <span class="text-[11px] text-slate-400">预估：印度蕉叶饭套餐 RM 15~22</span>
-                <button onclick="quickAddPreset('小印度正宗香蕉叶饭晚餐', 18, '餐饮', 'Cash')" class="text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg">
-                  + 记晚餐 RM18 (≈¥<span class="calc-val-cny" data-myr="18">29.5</span>)
+              <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+                <button onclick="addPreset('前往 KLCC 交通', 15, '交通')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记车费 RM 15 (≈¥24.6)
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- STAGE 7 -->
-          <div class="relative flex items-start gap-4" id="stage-card-6">
-            <button onclick="toggleStageDone(6)" class="w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center border-4 border-white shadow-lg shrink-0 z-10 transition cursor-pointer" title="点击打勾标记完成">
-              <span id="stage-dot-6"><i class="fa-solid fa-plane text-xs"></i></span>
+          <!-- Stage 6 -->
+          <div class="relative flex items-start space-x-4">
+            <button onclick="toggleStage(6)" id="stage-badge-6" class="w-9 h-9 rounded-full bg-white border-2 border-slate-300 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 z-10 transition">
+              06
             </button>
-
-            <div class="flex-1 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-5 shadow-xl space-y-4">
-              <div class="flex items-center justify-between flex-wrap gap-2">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">19:15 - 22:10</span>
-                <a href="https://www.google.com/maps/search/?api=1&query=Kuala+Lumpur+International+Airport+Terminal+2" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-amber-300 hover:text-white flex items-center gap-1 bg-white/10 px-2.5 py-0.5 rounded border border-white/20 transition">
-                  <i class="fa-solid fa-plane-arrival"></i> KLIA T2 终点 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            <div class="flex-1 bg-white p-4 sm:p-5 rounded-xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">18:00 - 19:30</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=Little+India+Brickfields+Kuala+Lumpur" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                  <i class="fa-solid fa-location-dot"></i> 小印度十五碑地图
                 </a>
               </div>
+              <h4 class="font-bold text-base text-slate-900 mb-1">小印度十五碑风情、晚饭与取回行李</h4>
+              <p class="text-sm text-slate-600 mb-3">
+                搭乘 LRT 返回 KL Sentral 旁的小印度十五碑（Brickfields），感受异域街头氛围，享用地道的香蕉叶饭（Banana Leaf Rice）。随后返回车站寄存柜取回随身行李。
+              </p>
 
-              <div>
-                <h3 class="text-base font-bold text-white">KL Sentral 取行李，搭快铁直达 T2 悠闲通关</h3>
-                <p class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
-                  19:15 从 <a href="https://www.google.com/maps/search/?api=1&query=KL+Sentral+Kuala+Lumpur" target="_blank" rel="noopener noreferrer" class="text-amber-300 font-bold hover:underline">KL Sentral</a> 行李柜取回大件行李。19:30 乘坐 KLIA Ekspres / Transit 直达 <a href="https://www.google.com/maps/search/?api=1&query=Kuala+Lumpur+International+Airport+Terminal+2" target="_blank" rel="noopener noreferrer" class="text-amber-300 font-bold hover:underline">KLIA T2</a>（35 分钟直达，RM 55 / ≈¥<span class="calc-val-cny" data-myr="55">90.2</span>），彻底规避晚高峰公路大堵车风险。20:10 准时抵达 T2，从容办理登机安检，安心乘搭 22:10 飞往澳洲的夜间航班。
-                </p>
+              <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+                <button onclick="addPreset('小印度香蕉叶饭晚饭', 20, '餐饮')" class="text-xs px-2.5 py-1 rounded bg-slate-100 hover:bg-amber-100 text-slate-700 font-medium transition">
+                  + 记晚饭 RM 20 (≈¥32.8)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 7 -->
+          <div class="relative flex items-start space-x-4">
+            <button onclick="toggleStage(7)" id="stage-badge-7" class="w-9 h-9 rounded-full bg-slate-900 border-2 border-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 z-10 transition">
+              07
+            </button>
+            <div class="flex-1 bg-slate-900 text-white p-4 sm:p-5 rounded-xl shadow-md">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">19:30 - 22:10</span>
+                <span class="text-xs text-slate-400">登机保障 · 避堵</span>
+              </div>
+              <h4 class="font-bold text-base text-white mb-1">前往 T2 机场通关与登机</h4>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-3">
+                <strong>首选推荐：</strong>19:30 在 KL Sentral 搭乘 <strong>KLIA Ekspres / Transit 快铁</strong>（约 30-35 分钟直达 T2，RM 55，≈ ¥90.2），班次准时且完全避开晚高峰大堵车。20:10 准时抵达 T2，从容办理登机手续与安检，乘坐 22:10 飞往澳洲的航班。
+              </p>
+              <div class="text-[11px] text-slate-400 mb-3">
+                * 若选大巴（RM 12~15），务必提前至 19:00 前发车以防公路拥堵。
               </div>
 
-              <!-- Dedicated Transport Section -->
-              <div class="p-3 bg-white/10 rounded-xl border border-white/15 space-y-2 text-xs">
-                <div class="flex items-center justify-between font-bold text-amber-300">
-                  <span><i class="fa-solid fa-stopwatch mr-1"></i>返程机场交通方案对比 (晚高峰严防堵车)</span>
-                  <span class="text-slate-300 font-normal">目标 20:10 抵达 T2</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <div class="p-2.5 rounded-lg bg-slate-800/90 border border-purple-400/50">
-                    <div class="flex justify-between font-bold text-purple-300">
-                      <span>首选：KLIA Ekspres 快铁</span>
-                      <span>RM 55 (≈¥<span class="calc-val-cny" data-myr="55">90.2</span>)</span>
-                    </div>
-                    <p class="text-[11px] text-slate-300 mt-0.5">19:30 发车，35 分钟准点直达，零堵车风险。</p>
-                    <button onclick="quickAddPreset('返程 KLIA Ekspres 机场快铁', 55, '交通', 'Card')" class="mt-2 w-full text-center py-1 rounded bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] transition">
-                      + 记入返程快铁 RM55
-                    </button>
-                  </div>
-
-                  <div class="p-2.5 rounded-lg bg-slate-800/90 border border-slate-700">
-                    <div class="flex justify-between font-bold text-slate-300">
-                      <span>次选：机场大巴</span>
-                      <span>RM 15 (≈¥<span class="calc-val-cny" data-myr="15">24.6</span>)</span>
-                    </div>
-                    <p class="text-[11px] text-slate-400 mt-0.5">需提前至 19:00 前发车，预留 60-75 分钟。</p>
-                    <button onclick="quickAddPreset('返程机场巴士', 15, '交通', 'Cash')" class="mt-2 w-full text-center py-1 rounded bg-slate-700 hover:bg-slate-600 text-white font-bold text-[11px] transition">
-                      + 记入返程大巴 RM15
-                    </button>
-                  </div>
-                </div>
+              <div class="flex flex-wrap gap-2 pt-1 border-t border-slate-800">
+                <button onclick="addPreset('返程 KLIA Ekspres 快铁', 55, '交通')" class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 font-medium transition border border-slate-700">
+                  + 记返程快铁 RM 55 (≈¥90.2)
+                </button>
               </div>
             </div>
           </div>
@@ -561,129 +367,100 @@
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: Money Logging Dashboard & Real-Time CNY Priority (4 Cols) -->
-      <div id="money-logger-section" class="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
+      <!-- Secondary Column: Money Logger (4 Cols) -->
+      <div id="money-section" class="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
         
-        <!-- Live Form Card -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-4">
-          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <!-- Summary Box -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-wallet text-amber-500"></i> 旅行支出记账
+              <i class="fa-solid fa-wallet text-amber-500"></i> 开销随手记
             </h3>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-              主折算: 人民币 CNY (¥)
-            </span>
+            <button onclick="toggleRateSettings()" class="text-[11px] text-slate-500 hover:text-slate-800 flex items-center gap-1">
+              <i class="fa-solid fa-sliders text-[10px]"></i> 汇率设置
+            </button>
           </div>
 
-          <!-- Explicit Expense Form -->
-          <form id="expense-form" class="space-y-3">
+          <!-- Adjustable Exchange Rate Box (Hidden by default) -->
+          <div id="rate-settings" class="hidden bg-slate-50 p-3 rounded-xl border border-slate-200 mb-3 text-xs space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-600 font-medium">1 MYR 兑换 CNY (¥):</span>
+              <input type="number" step="0.01" id="rate-cny-input" value="1.64" class="w-16 px-2 py-0.5 border border-slate-300 rounded text-right">
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-600 font-medium">1 MYR 兑换 AUD (A$):</span>
+              <input type="number" step="0.01" id="rate-aud-input" value="0.35" class="w-16 px-2 py-0.5 border border-slate-300 rounded text-right">
+            </div>
+            <button onclick="updateRates()" class="w-full py-1 bg-slate-800 hover:bg-slate-900 text-white rounded text-[11px] font-medium">
+              保存汇率
+            </button>
+          </div>
+
+          <!-- Total Balance Block (CNY Prominent) -->
+          <div class="bg-slate-50 rounded-xl p-3.5 border border-slate-100 mb-4">
+            <div class="text-[11px] text-slate-500 mb-0.5">今日累计支出 (主显 CNY)</div>
+            <div class="text-2xl font-black text-slate-900 tracking-tight" id="sum-cny">¥ 0.00</div>
+            <div class="flex items-center gap-2 mt-2 pt-2 border-t border-slate-200/60 text-xs">
+              <div class="text-slate-600">
+                马币: <span class="font-bold text-slate-900" id="sum-myr">RM 0.00</span>
+              </div>
+              <div class="text-slate-300">|</div>
+              <div class="text-slate-600">
+                澳元: <span class="font-bold text-slate-900" id="sum-aud">A$ 0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Form -->
+          <form id="expense-form" class="space-y-3" onsubmit="event.preventDefault(); handleAddExpense();">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">
-                消费项目名称 <span class="text-rose-500">*</span>
-              </label>
-              <input type="text" id="exp-desc" placeholder="例如：丽丰牛肉面、KTM 火车票" required class="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+              <label class="block text-xs font-medium text-slate-600 mb-1">项目名称</label>
+              <input type="text" id="exp-desc" placeholder="例如：OldTown 咖椰吐司、行李寄存" required class="w-full text-xs px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500">
             </div>
 
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">
-                  金额 (MYR 马币) <span class="text-rose-500">*</span>
-                </label>
-                <input type="number" step="0.1" min="0.1" id="exp-amount" placeholder="0.00" required class="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold">
+                <label class="block text-xs font-medium text-slate-600 mb-1">金额 (MYR)</label>
+                <input type="number" step="0.1" id="exp-amount" placeholder="0.00" oninput="previewConversion(this.value)" required class="w-full text-xs px-3 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500">
               </div>
-
               <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">类别</label>
-                <select id="exp-category" class="w-full text-xs px-2 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <label class="block text-xs font-medium text-slate-600 mb-1">类别</label>
+                <select id="exp-cat" class="w-full text-xs px-2.5 py-2 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500">
                   <option value="交通">交通 (Transit)</option>
                   <option value="餐饮">餐饮 (Food)</option>
-                  <option value="寄存">行李寄存</option>
-                  <option value="求签/门票">求签 / 祈福</option>
+                  <option value="求签/门票">求签 / 门票</option>
                   <option value="购物">古着 / 购物</option>
-                  <option value="其他">其他杂项</option>
+                  <option value="寄存">行李寄存</option>
+                  <option value="杂项">其他杂项</option>
                 </select>
               </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">支付方式</label>
-              <select id="exp-pay-method" class="w-full text-xs px-2.5 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                <option value="Cash">现金 (Cash)</option>
-                <option value="Card">Visa / Mastercard / 银联信用卡</option>
-                <option value="TnG">Touch 'n Go / 支付宝 / 微信</option>
-              </select>
+            <!-- Live conversion preview in form -->
+            <div id="form-cny-preview" class="text-[11px] text-amber-700 bg-amber-50 px-2.5 py-1 rounded hidden font-medium">
+              折合人民币：¥ 0.00
             </div>
 
-            <!-- Instant Real-Time CNY Conversion Preview (Primary) & AUD (Secondary) -->
-            <div class="p-2.5 bg-amber-50/70 border border-amber-200/80 rounded-lg text-xs space-y-1">
-              <div class="flex items-center justify-between">
-                <span class="text-slate-600 text-[11px]">折算人民币 (主要):</span>
-                <span class="font-extrabold text-amber-700 text-sm" id="form-conversion-preview">¥ 0.00</span>
-              </div>
-              <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-amber-200/50">
-                <span>折算澳元:</span>
-                <span class="font-bold text-slate-700" id="form-conversion-aud">A$ 0.00</span>
-              </div>
-            </div>
-
-            <button type="submit" id="exp-submit-btn" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-plus text-xs"></i>
-              <span>记一笔 / Log Expense</span>
+            <button type="submit" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg text-xs transition shadow-sm flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-plus text-[10px]"></i> 记一笔
             </button>
           </form>
         </div>
 
-        <!-- Expense Records Table -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-900">
-              已记账目 (<span id="table-record-count">0</span>)
-            </span>
-            <button onclick="clearAllExpenses()" class="text-[11px] text-slate-400 hover:text-rose-600 transition cursor-pointer">
-              清空全部
-            </button>
+        <!-- Expense Records List -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold text-slate-800">记账记录 (<span id="record-count">0</span>)</span>
+            <button onclick="clearAllExpenses()" class="text-[11px] text-slate-400 hover:text-red-500 transition">清空全部</button>
           </div>
-
-          <!-- Scrollable Table -->
-          <div id="expense-records-container" class="space-y-2 max-h-72 overflow-y-auto no-scrollbar">
-            <!-- Dynamic rows will be inserted here -->
+          <div id="expense-list" class="space-y-2 max-h-72 overflow-y-auto no-scrollbar">
+            <!-- Records injected here -->
           </div>
         </div>
 
-        <!-- Exchange Rate Settings Accordion (CNY Primary, AUD Secondary) -->
-        <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm space-y-2">
-          <details class="group" open>
-            <summary class="flex items-center justify-between text-xs font-bold text-slate-700 cursor-pointer list-none">
-              <span class="flex items-center gap-1.5">
-                <i class="fa-solid fa-calculator text-amber-500"></i> 参考汇率设定 (Live Rates)
-              </span>
-              <span class="text-slate-400 group-open:rotate-180 transition-transform">
-                <i class="fa-solid fa-chevron-down text-[10px]"></i>
-              </span>
-            </summary>
-
-            <div class="pt-3 space-y-2.5 text-xs border-t border-slate-100 mt-2">
-              <div>
-                <label class="block text-[11px] text-slate-500 mb-0.5">1 马币 (MYR) = ? 人民币 (CNY)</label>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-amber-600">¥</span>
-                  <input type="number" step="0.01" min="0.1" id="rate-input-cny" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-slate-800">
-                </div>
-              </div>
-              <div>
-                <label class="block text-[11px] text-slate-500 mb-0.5">1 马币 (MYR) = ? 澳元 (AUD)</label>
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-500">A$</span>
-                  <input type="number" step="0.01" min="0.01" id="rate-input-aud" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-slate-800">
-                </div>
-              </div>
-              <div class="flex gap-2 justify-end pt-1">
-                <button onclick="resetDefaultRates()" class="text-[10px] text-slate-400 hover:text-slate-600">恢复默认 (1.64 / 0.35)</button>
-                <button onclick="saveCustomRates()" class="text-[10px] bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded font-bold">更新汇率</button>
-              </div>
-            </div>
-          </details>
-        </div>
+        <p class="text-[11px] text-slate-400 text-center leading-relaxed">
+          参考汇率：1 MYR ≈ <span id="hint-cny">1.64</span> CNY / <span id="hint-aud">0.35</span> AUD<br>数据已加密保存在您本地设备中
+        </p>
 
       </div>
 
@@ -691,344 +468,232 @@
   </main>
 
   <script>
-    // Storage Fallback
-    const inMemoryStorage = {};
-    function safeGetItem(key) {
-      try {
-        return localStorage.getItem(key);
-      } catch (e) {
-        return inMemoryStorage[key] || null;
-      }
-    }
-    function safeSetItem(key, val) {
-      try {
-        localStorage.setItem(key, val);
-      } catch (e) {
-        inMemoryStorage[key] = val;
-      }
-    }
+    // Rates configuration
+    let rateCny = 1.64;
+    let rateAud = 0.35;
 
-    const STORAGE_KEY_ITEMS = 'kl_transit_expenses_v2_cny';
-    const STORAGE_KEY_RATES = 'kl_transit_rates_v2_cny';
-    const STORAGE_KEY_STAGES = 'kl_transit_stages_v2_cny';
-
-    // Defaults: 1 MYR ≈ 1.64 CNY, 1 MYR ≈ 0.35 AUD (HKD completely removed)
-    const DEFAULT_RATE_CNY = 1.64;
-    const DEFAULT_RATE_AUD = 0.35;
-
-    let rateCny = DEFAULT_RATE_CNY;
-    let rateAud = DEFAULT_RATE_AUD;
-
+    // Load persisted rates if available
     try {
-      const storedRate = safeGetItem(STORAGE_KEY_RATES);
-      if (storedRate) {
-        const parsed = JSON.parse(storedRate);
-        if (parsed.cny > 0) rateCny = Number(parsed.cny);
-        if (parsed.aud > 0) rateAud = Number(parsed.aud);
-      }
-    } catch(e) {
-      rateCny = DEFAULT_RATE_CNY;
-      rateAud = DEFAULT_RATE_AUD;
-    }
+      const savedRateCny = localStorage.getItem('kl_rate_cny');
+      const savedRateAud = localStorage.getItem('kl_rate_aud');
+      if (savedRateCny) rateCny = parseFloat(savedRateCny);
+      if (savedRateAud) rateAud = parseFloat(savedRateAud);
+    } catch(e) {}
 
+    // Load persisted expenses
     let expenses = [];
     try {
-      const storedItems = safeGetItem(STORAGE_KEY_ITEMS);
-      if (storedItems) {
-        expenses = JSON.parse(storedItems);
-      } else {
-        // Initial presets
-        expenses = [
-          { id: 'exp_1', desc: 'OldTown 咖椰吐司+半熟蛋+拉茶', amount: 10, category: '餐饮', payment: 'Cash', time: '07:20' },
-          { id: 'exp_2', desc: 'KL Sentral 行李寄存柜', amount: 15, category: '寄存', payment: 'Card', time: '06:50' },
-          { id: 'exp_3', desc: 'KTM 通勤往返黑风洞火车票', amount: 5.2, category: '交通', payment: 'Cash', time: '07:45' }
-        ];
-        safeSetItem(STORAGE_KEY_ITEMS, JSON.stringify(expenses));
-      }
+      expenses = JSON.parse(localStorage.getItem('kl_transit_expenses') || '[]');
     } catch(e) {
       expenses = [];
     }
 
-    let completedStages = [false, false, false, false, false, false, false];
-    try {
-      const storedStages = safeGetItem(STORAGE_KEY_STAGES);
-      if (storedStages) completedStages = JSON.parse(storedStages);
-    } catch(e) {}
+    // Stage checklist states
+    let stageStates = [false, false, false, false, false, false, false];
 
-    // Toast Notification System
-    function showToast(msg, type = 'success') {
-      const container = document.getElementById('toast-container');
-      if (!container) return;
+    // Flight Live Countdown (Target: Today 22:10:00)
+    function updateCountdown() {
+      const countdownEl = document.getElementById('flight-countdown');
+      if (!countdownEl) return;
 
-      const toast = document.createElement('div');
-      const isSuccess = type === 'success';
-      toast.className = `p-3.5 rounded-xl border shadow-lg text-xs font-semibold flex items-center justify-between gap-3 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0 ${
-        isSuccess ? 'bg-emerald-900/90 text-white border-emerald-700' : 'bg-rose-900/90 text-white border-rose-700'
-      }`;
+      const now = new Date();
+      const target = new Date();
+      target.setHours(22, 10, 0, 0);
 
-      toast.innerHTML = `
-        <div class="flex items-center gap-2">
-          <i class="fa-solid ${isSuccess ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation text-rose-400'}"></i>
-          <span>${msg}</span>
-        </div>
-        <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white p-1">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      `;
+      const diffMs = target - now;
 
-      container.appendChild(toast);
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      });
+      if (diffMs <= 0) {
+        countdownEl.innerHTML = '<span class="text-red-600 font-bold">已起飞 / 闸口关闭</span>';
+        return;
+      }
 
-      setTimeout(() => {
-        toast.classList.add('opacity-0', '-translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+      const totalSeconds = Math.floor(diffMs / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      const pad = (n) => String(n).padStart(2, '0');
+
+      if (totalSeconds < 5400) { // under 1.5h
+        countdownEl.className = 'text-xs sm:text-sm font-extrabold font-mono text-red-600 tracking-tight animate-pulse';
+      }
+
+      countdownEl.innerText = `${pad(hours)}时 ${pad(minutes)}分 ${pad(seconds)}秒`;
     }
 
-    // Calculation & Render
-    function updateDashboard() {
-      const totalMyr = expenses.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
-      const totalCny = totalMyr * rateCny;
-      const totalAud = totalMyr * rateAud;
+    function toggleStage(num) {
+      const idx = num - 1;
+      stageStates[idx] = !stageStates[idx];
+      const btn = document.getElementById(`stage-badge-${num}`);
+      if (stageStates[idx]) {
+        btn.classList.add('bg-emerald-500', 'border-emerald-500', 'text-white');
+        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+      } else {
+        btn.classList.remove('bg-emerald-500', 'border-emerald-500', 'text-white');
+        btn.innerText = String(num).padStart(2, '0');
+      }
 
-      // Hero Elements
+      const completed = stageStates.filter(Boolean).length;
+      document.getElementById('progress-indicator').innerText = `完成进度：${completed} / 7 站`;
+    }
+
+    function toggleRateSettings() {
+      const el = document.getElementById('rate-settings');
+      el.classList.toggle('hidden');
+    }
+
+    function updateRates() {
+      const cnyVal = parseFloat(document.getElementById('rate-cny-input').value);
+      const audVal = parseFloat(document.getElementById('rate-aud-input').value);
+      if (!isNaN(cnyVal) && cnyVal > 0) rateCny = cnyVal;
+      if (!isNaN(audVal) && audVal > 0) rateAud = audVal;
+
+      try {
+        localStorage.setItem('kl_rate_cny', rateCny.toString());
+        localStorage.setItem('kl_rate_aud', rateAud.toString());
+      } catch(e) {}
+
+      document.getElementById('hint-cny').innerText = rateCny.toFixed(2);
+      document.getElementById('hint-aud').innerText = rateAud.toFixed(2);
+      toggleRateSettings();
+      showToast('汇率已更新');
+      renderExpenses();
+    }
+
+    function previewConversion(val) {
+      const prevEl = document.getElementById('form-cny-preview');
+      const num = parseFloat(val);
+      if (!isNaN(num) && num > 0) {
+        prevEl.classList.remove('hidden');
+        prevEl.innerText = `折合人民币：¥ ${(num * rateCny).toFixed(2)}`;
+      } else {
+        prevEl.classList.add('hidden');
+      }
+    }
+
+    function renderExpenses() {
+      const listEl = document.getElementById('expense-list');
+      const countEl = document.getElementById('record-count');
+      const sumCnyEl = document.getElementById('sum-cny');
+      const sumMyrEl = document.getElementById('sum-myr');
+      const sumAudEl = document.getElementById('sum-aud');
+
       const heroSumCny = document.getElementById('hero-sum-cny');
       const heroSumMyr = document.getElementById('hero-sum-myr');
       const heroSumAud = document.getElementById('hero-sum-aud');
-      const heroCount = document.getElementById('hero-badge-count');
-      const tableCount = document.getElementById('table-record-count');
 
-      if (heroSumCny) heroSumCny.textContent = `¥ ${totalCny.toFixed(2)}`;
-      if (heroSumMyr) heroSumMyr.textContent = `RM ${totalMyr.toFixed(2)}`;
-      if (heroSumAud) heroSumAud.textContent = `A$ ${totalAud.toFixed(2)}`;
-      if (heroCount) heroCount.textContent = `${expenses.length} 笔`;
-      if (tableCount) tableCount.textContent = expenses.length;
-
-      // Update static badges with data-myr
-      document.querySelectorAll('.calc-val-cny').forEach(el => {
-        const val = parseFloat(el.getAttribute('data-myr')) || 0;
-        el.textContent = (val * rateCny).toFixed(1);
-      });
-
-      // Rate inputs
-      const rateCnyInput = document.getElementById('rate-input-cny');
-      const rateAudInput = document.getElementById('rate-input-aud');
-      if (rateCnyInput) rateCnyInput.value = rateCny;
-      if (rateAudInput) rateAudInput.value = rateAud;
-
-      renderExpenseList();
-      renderStages();
-      updateFormPreview();
-    }
-
-    function renderExpenseList() {
-      const container = document.getElementById('expense-records-container');
-      if (!container) return;
+      countEl.innerText = expenses.length;
 
       if (expenses.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-8 text-slate-400 text-xs">
-            <i class="fa-solid fa-receipt text-2xl text-slate-300 block mb-1"></i>
-            暂无记账，点击行程卡片或上方表单添加
+        listEl.innerHTML = `
+          <div class="text-center py-6 text-slate-400 text-xs">
+            <i class="fa-solid fa-receipt text-2xl mb-1 text-slate-300 block"></i>
+            还没有任何记账记录
           </div>
         `;
-        return;
-      }
-
-      container.innerHTML = expenses.map(item => {
-        const itemCny = ((item.amount || 0) * rateCny).toFixed(2);
-        const itemAud = ((item.amount || 0) * rateAud).toFixed(2);
-        return `
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs hover:border-slate-200 transition">
-            <div class="truncate mr-2">
-              <span class="font-bold text-slate-800 block truncate">${escapeHtml(item.desc)}</span>
-              <span class="text-[10px] text-slate-400">
-                ${escapeHtml(item.category)} · ${escapeHtml(item.payment || 'Cash')} · ≈ <b class="text-amber-700">¥${itemCny}</b> (A$${itemAud})
-              </span>
+      } else {
+        listEl.innerHTML = expenses.map((item, idx) => {
+          const cnyVal = (item.amount * rateCny).toFixed(2);
+          const audVal = (item.amount * rateAud).toFixed(2);
+          return `
+            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 text-xs">
+              <div class="truncate mr-2">
+                <span class="font-medium text-slate-800 block truncate">${escapeHtml(item.desc)}</span>
+                <span class="text-[10px] text-slate-500">${item.cat} · RM ${item.amount.toFixed(2)} (A$${audVal})</span>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="font-bold text-slate-900 text-sm">¥ ${cnyVal}</span>
+                <button onclick="deleteExpense(${idx})" class="text-slate-300 hover:text-red-500 transition px-1">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
             </div>
-            <div class="flex items-center gap-2 shrink-0">
-              <span class="font-extrabold text-slate-900">RM ${Number(item.amount).toFixed(2)}</span>
-              <button onclick="deleteExpense('${item.id}')" title="删除" class="text-slate-300 hover:text-rose-600 p-1 transition cursor-pointer">
-                <i class="fa-solid fa-trash-can text-xs"></i>
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function updateFormPreview() {
-      const amtInput = document.getElementById('exp-amount');
-      const previewCny = document.getElementById('form-conversion-preview');
-      const previewAud = document.getElementById('form-conversion-aud');
-      if (!amtInput) return;
-
-      const val = parseFloat(amtInput.value) || 0;
-      const cny = (val * rateCny).toFixed(2);
-      const aud = (val * rateAud).toFixed(2);
-      if (previewCny) previewCny.textContent = `¥ ${cny}`;
-      if (previewAud) previewAud.textContent = `A$ ${aud}`;
-    }
-
-    // Stage Done Toggling
-    function toggleStageDone(index) {
-      if (index >= 0 && index < completedStages.length) {
-        completedStages[index] = !completedStages[index];
-        safeSetItem(STORAGE_KEY_STAGES, JSON.stringify(completedStages));
-        renderStages();
-      }
-    }
-
-    function renderStages() {
-      let doneCount = 0;
-      completedStages.forEach((isDone, idx) => {
-        if (isDone) doneCount++;
-        const card = document.getElementById(`stage-card-${idx}`);
-        const dot = document.getElementById(`stage-dot-${idx}`);
-        if (!card || !dot) return;
-
-        if (isDone) {
-          card.classList.add('opacity-60');
-          dot.innerHTML = '<i class="fa-solid fa-check text-xs"></i>';
-        } else {
-          card.classList.remove('opacity-60');
-          dot.textContent = idx === 6 ? '07' : `0${idx + 1}`;
-        }
-      });
-
-      const badge = document.getElementById('itinerary-completion-badge');
-      if (badge) {
-        badge.textContent = `已打卡 ${doneCount} / 7 站`;
-      }
-    }
-
-    // Expense Addition Logic
-    function handleAddExpense(desc, amount, category = '其他', payment = 'Cash') {
-      const trimmed = (desc || '').trim();
-      const numAmount = parseFloat(amount);
-
-      if (!trimmed) {
-        showToast('请输入消费款项名称', 'error');
-        return false;
-      }
-      if (isNaN(numAmount) || numAmount <= 0) {
-        showToast('请输入大于0的有效金额', 'error');
-        return false;
+          `;
+        }).join('');
       }
 
-      const newEntry = {
-        id: 'exp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-        desc: trimmed,
-        amount: numAmount,
-        category,
-        payment,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
+      // Compute Totals
+      const totalMyr = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+      const totalCny = totalMyr * rateCny;
+      const totalAud = totalMyr * rateAud;
 
-      expenses.unshift(newEntry);
-      safeSetItem(STORAGE_KEY_ITEMS, JSON.stringify(expenses));
-      updateDashboard();
-      showToast(`已成功记入: ${trimmed} (RM ${numAmount.toFixed(2)} ≈ ¥${(numAmount * rateCny).toFixed(2)})`);
-      return true;
+      sumCnyEl.innerText = `¥ ${totalCny.toFixed(2)}`;
+      sumMyrEl.innerText = `RM ${totalMyr.toFixed(2)}`;
+      sumAudEl.innerText = `A$ ${totalAud.toFixed(2)}`;
+
+      heroSumCny.innerText = `¥ ${totalCny.toFixed(2)}`;
+      heroSumMyr.innerText = `RM ${totalMyr.toFixed(2)}`;
+      heroSumAud.innerText = `A$ ${totalAud.toFixed(2)}`;
+
+      try {
+        localStorage.setItem('kl_transit_expenses', JSON.stringify(expenses));
+      } catch(e) {}
     }
 
-    // Quick Add Button (Immediate)
-    function quickAddPreset(desc, amount, category, payment) {
-      handleAddExpense(desc, amount, category, payment);
+    function handleAddExpense() {
+      const descInput = document.getElementById('exp-desc');
+      const amountInput = document.getElementById('exp-amount');
+      const catInput = document.getElementById('exp-cat');
+
+      const desc = descInput.value.trim();
+      const amount = parseFloat(amountInput.value);
+      const cat = catInput.value;
+
+      if (!desc || isNaN(amount) || amount <= 0) return;
+
+      expenses.unshift({ desc, amount, cat, timestamp: Date.now() });
+      descInput.value = '';
+      amountInput.value = '';
+      document.getElementById('form-cny-preview').classList.add('hidden');
+
+      showToast(`已成功记录: ${desc}`);
+      renderExpenses();
     }
 
-    // Delete Single
-    function deleteExpense(id) {
-      expenses = expenses.filter(x => x.id !== id);
-      safeSetItem(STORAGE_KEY_ITEMS, JSON.stringify(expenses));
-      updateDashboard();
-      showToast('已删除该笔消费');
+    function addPreset(desc, amount, cat) {
+      expenses.unshift({ desc, amount, cat, timestamp: Date.now() });
+      showToast(`已快捷添加: ${desc} (RM ${amount})`);
+      renderExpenses();
     }
 
-    // Clear All
+    function deleteExpense(index) {
+      expenses.splice(index, 1);
+      renderExpenses();
+    }
+
     function clearAllExpenses() {
-      if (expenses.length === 0) {
-        showToast('暂无记录可清空', 'error');
-        return;
+      if (confirm('确认清空所有支出记录？')) {
+        expenses = [];
+        renderExpenses();
       }
-      expenses = [];
-      safeSetItem(STORAGE_KEY_ITEMS, JSON.stringify(expenses));
-      updateDashboard();
-      showToast('已清空全部账目');
     }
 
-    // Rates Handlers
-    function saveCustomRates() {
-      const cnyInput = document.getElementById('rate-input-cny');
-      const audInput = document.getElementById('rate-input-aud');
-      const newCny = parseFloat(cnyInput ? cnyInput.value : 0);
-      const newAud = parseFloat(audInput ? audInput.value : 0);
-
-      if (isNaN(newCny) || newCny <= 0 || isNaN(newAud) || newAud <= 0) {
-        showToast('汇率数值必须大于 0', 'error');
-        return;
-      }
-
-      rateCny = newCny;
-      rateAud = newAud;
-      safeSetItem(STORAGE_KEY_RATES, JSON.stringify({ cny: rateCny, aud: rateAud }));
-      updateDashboard();
-      showToast(`汇率已更新: 1 MYR ≈ ¥${rateCny.toFixed(2)} CNY / A$${rateAud.toFixed(2)} AUD`);
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = msg;
+      toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-[-100px]', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2000);
     }
 
-    function resetDefaultRates() {
-      rateCny = DEFAULT_RATE_CNY;
-      rateAud = DEFAULT_RATE_AUD;
-      safeSetItem(STORAGE_KEY_RATES, JSON.stringify({ cny: rateCny, aud: rateAud }));
-      updateDashboard();
-      showToast('已恢复默认参考汇率 (1.64 / 0.35)');
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
+    // Initialize
+    document.getElementById('rate-cny-input').value = rateCny;
+    document.getElementById('rate-aud-input').value = rateAud;
+    document.getElementById('hint-cny').innerText = rateCny.toFixed(2);
+    document.getElementById('hint-aud').innerText = rateAud.toFixed(2);
 
-    // Initialize Event Listeners
-    window.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('expense-form');
-      if (form) {
-        form.addEventListener('submit', function (e) {
-          e.preventDefault();
-          const descInput = document.getElementById('exp-desc');
-          const amountInput = document.getElementById('exp-amount');
-          const catInput = document.getElementById('exp-category');
-          const payInput = document.getElementById('exp-pay-method');
-
-          const success = handleAddExpense(
-            descInput ? descInput.value : '',
-            amountInput ? amountInput.value : 0,
-            catInput ? catInput.value : '其他',
-            payInput ? payInput.value : 'Cash'
-          );
-
-          if (success) {
-            if (descInput) descInput.value = '';
-            if (amountInput) amountInput.value = '';
-            updateFormPreview();
-          }
-        });
-      }
-
-      const amtInput = document.getElementById('exp-amount');
-      if (amtInput) {
-        amtInput.addEventListener('input', updateFormPreview);
-      }
-
-      updateDashboard();
-    });
+    renderExpenses();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   </script>
 </body>
 </html>
